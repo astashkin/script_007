@@ -1,6 +1,6 @@
-import string
-import random
+import uuid
 
 
-def generate_random_string(lengths=10):
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=lengths))
+def generate_random_string(length=15):
+    random_str = str(uuid.uuid4())
+    return random_str.replace('-', '')[:length]

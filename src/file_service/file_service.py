@@ -39,8 +39,11 @@ def get_current_dir():
 
 
 def __generate_random_filename(attempts=10000):
+    name_length = 15
     for i in range(attempts):
-        filename = utils.generate_random_string() + '.txt'
+        filename = utils.generate_random_string(length=name_length)
         if not os.path.isfile(filename):
             return filename
+        if attempts > 0 and attempts % 1000 == 0:
+            name_length += 1
     raise RandomNameGenerationError(f"Failed to generate unique file name after {attempts} attempts")
