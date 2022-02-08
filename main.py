@@ -5,6 +5,7 @@ from src.file_service import file_service
 
 
 def read_file():
+    """ Asks use for filename, prints file content """
     filename = input("Enter file name : ")
     print(f"read file : {filename}")
     content = file_service.read_file(filename)
@@ -12,6 +13,7 @@ def read_file():
 
 
 def create_file():
+    """ Asks user for file content, creates file with that content """
     content = input("Enter file content : ")
     print(f"creating file with content: {content}")
     filename = file_service.create_file(content)
@@ -19,28 +21,33 @@ def create_file():
 
 
 def delete_file():
+    """ Asks user for filename, deletes this file """
     filename = input("Enter file name : ")
     file_service.delete_file(filename)
     print(f"deleted file : {filename}")
 
 
 def list_dir():
+    """ Prints content of current directory """
     print(f"list dir")
     for f in file_service.list_dir():
         print(f)
 
 
 def change_dir():
+    """ Asks user for directory name, changes current working directory """
     directory = input("Enter dir name : ")
     print(f"change dir : {directory}")
     file_service.change_dir(directory)
 
 
 def print_current_dir():
+    """ Prints path to current working directory """
     print(file_service.get_current_dir())
 
 
 def main():
+    """ Parses arguments and starts accepting user CLI commands for file server """
     parser = argparse.ArgumentParser(description="REST File Server")
     parser.add_argument('-d', '--directory', dest='initial_dir', help="Initial directory", default=os.getcwd())
     args = parser.parse_args()
