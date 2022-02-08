@@ -50,9 +50,17 @@ def get_current_dir() -> str:
     return os.getcwd()
 
 
+def get_file_metadata(filename: str) -> tuple:
+    """
+     :param filename: file to read
+     :return: tuple (create_date, modification_date, filesize) """
+    metadata = os.stat(filename)
+    return metadata.st_ctime, metadata.st_mtime, metadata.st_size
+
+
 def __generate_random_filename(attempts: int=10000) -> str:
     """ Attempts to randomly generate filename that does not exist in current directory
-    :raise: RandomNameGenerationError if unique filename was not generated after specified amount of attempts
+    :raises: RandomNameGenerationError if unique filename was not generated after specified amount of attempts
     :param attempts: how many times to try before raising exception
     :return: string with unique filename """
     name_length = 15

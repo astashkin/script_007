@@ -92,3 +92,17 @@ def test_get_current_dir_error_flow(mocker):
     mocker.patch('os.getcwd', side_effect=OSError())
     with pytest.raises(OSError):
         file_service.get_current_dir()
+
+
+def test_get_file_metadata_success_flow(mocker):
+    ls_mock = mocker.patch('os.stat')
+    ls_mock.return_value.st_ctime = 123
+    ls_mock.return_value.st_mtime = 456
+    ls_mock.return_value.st_size = 789
+    assert file_service.get_file_metadata('test_file') == (123, 456, 789)
+
+
+def test_get_file_metadata_error_flow(mocker):
+    mocker.patch('os.stat', side_effect=OSError())
+    with pytest.raises(OSError):
+        file_service.get_file_metadata('')
