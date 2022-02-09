@@ -2,6 +2,8 @@
 import argparse
 import os
 from src.file_service import file_service
+import logging
+import src.logger
 
 
 def read_file():
@@ -51,12 +53,13 @@ def main():
     parser = argparse.ArgumentParser(description="REST File Server")
     parser.add_argument('-d', '--directory', dest='initial_dir', help="Initial directory", default=os.getcwd())
     args = parser.parse_args()
+    logging.info(f"Starting service with arguments: {args}")
     if not os.path.isdir(args.initial_dir):
-        print(f"{args.initial_dir} - directory does not exist!")
+        print("{args.initial_dir} - directory does not exist!")
+        logging.warning(f"{args.initial_dir} - directory does not exist!")
         return
     else:
         os.chdir(args.initial_dir)
-
     commands = {
         "read": read_file,
         "create": create_file,
@@ -68,9 +71,11 @@ def main():
 
     while True:
         command = input("Enter command: ")
+        logging.info(f'Received user command: {command}')
         if command == "exit":
             return
         if command not in commands:
+            logging.warning(f"Unknown command - {command}")
             print(f"Unknown command - {command}")
             print(f"Supported commands: {list(commands.keys())}")
             continue
@@ -78,7 +83,8 @@ def main():
         try:
             command()
         except Exception as ex:
-            print(f"Error on {command} execution : {ex}")
+            print(f"Error: {ex}")
+            logging.error(f"Error on {command} execution : {ex}")
 
 
 if __name__ == "__main__":
