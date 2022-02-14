@@ -1,5 +1,7 @@
 import os
 from src.utils import utils
+from src.crypto import signature_easy
+from src.crypto.signature import SignatureFactory
 
 
 class UniqueFilenameGenerationError(Exception):
@@ -15,16 +17,46 @@ def read_file(filename: str) -> str:
     return content
 
 
-def create_file(content: str) -> str:
+def create_file(content: str, filename: str='') -> str:
+    """ Creates file in current directory with random filename
+     :param content: content to write to file
+     :param filename: name of file
+     :return: filename of created file """
+    if not filename:
+        filename = __generate_random_filename()
+    with open(filename, 'w') as f:
+        f.write(content)
+    return filename
+
+
+def read_signed_file(filename: str) -> str:
+    """ :param filename: name or path of file to read
+     :return: content of specified file """
+    data = read_file(filename)
+    for label in SignatureFactory.signers:
+        sig_filename = f"{filename}.{label}"
+        if os.path.exists(sig_filename):
+            signer = SignatureFactory.get_signer(label)
+            with open(sig_filename, "r") as sig_file:
+                actual_sig = signer(data)
+                expected_sig = sig_file.read()
+                if actual_sig == expected_sig:
+                    return data
+                else:
+                    raise Exception("File broken")
+
+
+def create_signed_file(content: str) -> str:
     """ Creates file in current directory with random filename
      :param content: content to write to file
      :return: filename of created file """
-    try:
-        filename = __generate_random_filename()
-    except UniqueFilenameGenerationError as e:
-        raise e
-    with open(filename, 'w') as f:
-        f.write(content)
+    filename = __generate_random_filename()
+    create_file(content, filename)
+    signers = signature_easy.signers
+    for signer in signers:
+        hash_string = signers[signer](content)
+        hash_filename = filename + '.' + signer
+        create_file(hash_string, hash_filename)
     return filename
 
 
